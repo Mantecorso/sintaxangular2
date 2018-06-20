@@ -1,0 +1,45 @@
+ body, html {
+      padding: 0;
+      margin: 0;
+    }
+
+    .addSection {
+      min-height: 10vh;
+      background: indigo;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .taskList {
+      min-height: 40vh;
+      background-color: rebeccapurple;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .completed span {
+      text-decoration: line-through;
+      color: grey;
+    }
+
+    .taskItem {
+        border: 1px solid black;
+    }
+
+    .Grid {
+        display: grid;
+        grid-template-columns: 2fr 2fr 2fr 2fr;
+        grid-gap: 6px;
+    }
+
+    .uno {
+        border: 1px solid wheat;
+        background-color: tomato;
+        height: 200px;
+        text-align: center;
+    }

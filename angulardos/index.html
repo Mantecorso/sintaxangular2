@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta autor="Luis Jurado Quesada">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <title>Task list and drag and drop</title>
+
+  <script>
+    // relleno el localstorage para simular que ya habían tareas guardadas
+
+    //
+
+    // let todos = [{
+
+    //         text: 'comprar leche',
+
+    //         completed: false,
+
+    //         date: new Date()
+
+    //     },
+
+    //     {
+
+    //         text: 'comprar pan',
+
+    //         completed: true,
+
+    //         date: new Date()
+
+    //     },
+
+    //     {
+
+    //         text: 'comprar galletas',
+
+    //         completed: false,
+
+    //         date: new Date()
+
+    //     }
+
+
+
+    // ]
+
+    // localStorage.setItem('todos', JSON.stringify(todos))
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const createID = () => `taskId-${Date.now()}-${Math.round(Math.random() * 1000)}`;
+      const createElement = task => {
+        let node = document.createElement('div');
+        let template = task =>
+          `<div class="taskItem ${task.completed ? 'completed' : ''}" id="${task.id}" draggable="true" ondragstart="onDragStart(event)">
+                            <span>${task.text}</span>
+                            <input type="checkbox"
+                                name="completed"
+                                ${task.completed ? 'checked' : ''}
+                                > 
+                            <input type="button"
+                                value="Borrar">
+                        </div>`;
+        node.innerHTML = template(task);
+        return node.firstChild;
+      }
+
+      const saveToStorage = (task) => {
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos.push(task);
+        localStorage.setItem('todos', JSON.stringify(todos))
+      }
+
+      const removeIdFromStorage = id => {
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos = todos.filter(item => !(item.id === id));
+        localStorage.setItem('todos', JSON.stringify(todos))
+      }
+
+      const removeTask = evento => {
+        let taskItemNode = evento.target.parentNode;
+        let id = taskItemNode.id;
+        removeIdFromStorage(id);
+        taskItemNode.remove();
+      };
+
+      const toggleCompleted = evento => {
+        let checkbox = evento.target;
+        let taskItemNode = checkbox.parentNode;
+        taskItemNode.classList.toggle('completed');
+        let id = taskItemNode.id;
+        let completed = checkbox.checked;
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos = todos.map(task => {
+          if (task.id === id) {
+            task.completed = completed;
+          }
+          return task
+        })
+        localStorage.setItem('todos', JSON.stringify(todos))
+
+      }
+
+      const printTask = task => {
+
+        // let taskItemNode = document.createElement('div');
+
+        // taskItemNode.classList.add('taskItem');
+
+        // let textNode = document.createElement('span');
+
+        // textNode.innerText = task.text;
+
+        // let completedNode = document.createElement('input');
+
+        // completedNode.setAttribute('type', 'checkbox');
+
+        // let removeNode = document.createElement('input');
+
+        // removeNode.setAttribute('type', 'button');
+
+        // removeNode.value = 'Remove'
+
+        // taskItemNode.appendChild(textNode);
+
+        // taskItemNode.appendChild(completedNode);
+
+        // taskItemNode.appendChild(removeNode);
+
+        // lo mismo que createElement(task):
+
+        let taskItemNode = createElement(task);
+        taskItemNode.querySelector('[type="button"]').addEventListener('click', removeTask);
+        taskItemNode.querySelector('[type="checkbox"]').addEventListener('change', toggleCompleted);
+        document.querySelector('.taskList').appendChild(taskItemNode);
+      };
+
+      let savedTasks = JSON.parse(localStorage.getItem('todos'));
+
+      if (!Array.isArray(savedTasks)) {
+        savedTasks = [];
+      }
+
+      savedTasks.forEach(task => {
+        printTask(task)
+      })
+
+      document.querySelector('.addSection input').addEventListener('keyup', evento => {
+        if (evento.keyCode === 13) {
+          let text = evento.target.value.trim();
+          if (text === '') {
+            console.log('nada que guardar')
+          } else {
+            let task = {
+              text: text,
+              date: new Date(),
+              completed: false,
+              id: createID()
+            }
+            saveToStorage(task);
+            printTask(task);
+            evento.target.value = ''
+          }
+        }
+      })
+    })
+
+  </script>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header class="addSection">
+      <input type="text" placeholder="anyade tarea aqui">
+    </header>
+
+    <section class="taskList">
+
+    </section>
+
+  </div>
+  <div class="Grid">
+    <div class="uno" ondragover="allowDrop(event)" ondrop="onDrop(event)"><h3>Proyecto</h3></div>
+    <div class="uno" ondragover="allowDrop(event)" ondrop="onDrop(event)"><h3>Ejecucion</h3></div>
+    <div class="uno" ondragover="allowDrop(event)" ondrop="onDrop(event)"><h3>Revision</h3></div>
+    <div class="uno" ondragover="allowDrop(event)" ondrop="onDrop(event)"><h3>En uso</h3></div>
+  </div>
+  <script src="main.js"></script>
+</body>
+
+</html>
